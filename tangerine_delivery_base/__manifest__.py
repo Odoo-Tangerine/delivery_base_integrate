@@ -24,7 +24,6 @@
         'views/delivery_route_api_views.xml',
         'views/delivery_status_views.xml',
         'views/stock_picking_views.xml',
-        'views/res_config_settings_views.xml',
         'views/menus.xml'
     ],
     'images': ['static/description/thumbnail.png'],

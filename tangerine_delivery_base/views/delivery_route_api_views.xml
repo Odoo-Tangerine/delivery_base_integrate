@@ -26,6 +26,7 @@
                             <field name="headers" widget="code" options="{'mode': 'js'}"/>
                             <field name="domain"/>
                             <field name="route"/>
+                            <field name="is_need_access_token" widget="boolean_toggle"/>
                             <field name="description"/>
                         </group>
                     </group>
@@ -47,6 +48,7 @@
                 <field name="domain"/>
                 <field name="route"/>
                 <field name="method"/>
+                <field name="is_need_access_token" widget="boolean_toggle"/>
                 <field name="description"/>
             </tree>
         </field>

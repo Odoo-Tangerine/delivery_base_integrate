@@ -4,10 +4,11 @@ from odoo import fields, models, api
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
     remarks = fields.Char(string='Remarks')
-    cash_on_delivery = fields.Boolean(string='Order COD', default=False)
-    cash_on_delivery_amount = fields.Float(string='COD Money')
-    schedule_order = fields.Boolean(string='Scheduled for Order', default=False)
+    cash_on_delivery = fields.Boolean(string='COD', default=False)
+    cash_on_delivery_amount = fields.Monetary(string='COD Money')
+    schedule_order = fields.Boolean(string='Schedule', default=False)
     schedule_pickup_time_from = fields.Datetime(string='Pickup Time From', default=fields.Datetime.now)
     schedule_pickup_time_to = fields.Datetime(string='Pickup Time To')
 

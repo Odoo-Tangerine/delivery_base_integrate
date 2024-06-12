@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from enum import Enum
 from typing import Final
-from pydantic_settings import BaseSettings
 
 
-class status(BaseSettings):
+class status(Enum):
     HTTP_100_CONTINUE: Final[int] = 100
     HTTP_101_SWITCHING_PROTOCOLS: Final[int] = 101
     HTTP_102_PROCESSING: Final[int] = 102
