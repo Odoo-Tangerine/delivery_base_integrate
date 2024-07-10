@@ -6,8 +6,8 @@
         <field name="inherit_id" ref="stock_delivery.view_picking_withcarrier_out_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@name='tracking']" position="after">
-                <field name="status_id"/>
-                <field name="status_code" invisible="True"/>
+                <field name="delivery_status_id"/>
+                <field name="delivery_status_code" invisible="True"/>
             </xpath>
             <xpath expr="//group[@name='carrier_data']" position="after">
                 <group name='delivery_carrier_data' invisible="carrier_tracking_ref" string="Shipping Information">

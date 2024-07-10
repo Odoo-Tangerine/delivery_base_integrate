@@ -15,8 +15,8 @@ class StockPicking(models.Model):
     driver_name = fields.Char(string='Driver Name', readonly=True)
     driver_phone = fields.Char(string='Driver Phone', readonly=True)
     promo_code = fields.Char(string='Promo Code')
-    status_id = fields.Many2one('delivery.status', string='Delivery Status', readonly=True)
-    status_code = fields.Char(related='status_id.code')
+    delivery_status_id = fields.Many2one('delivery.status', string='Delivery Status', readonly=True)
+    delivery_status_code = fields.Char(related='delivery_status_id.code')
 
     @api.onchange('cash_on_delivery')
     def _on_change_cash_on_delivery(self):

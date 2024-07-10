@@ -112,24 +112,17 @@
                             <field name="default_promo_code"/>
                         </group>
                         <group name="delivery_webhook" string="Webhook">
-                            <label for="webhook_domain" string="URL"/>
-                            <div class="o_row">
-                                <field name="webhook_method"/>
-                                <field name="webhook_domain"/>
-                                <field name="webhook_route"/>
-                            </div>
-                            <field name="webhook_header" widget="code" options="{'mode': 'js'}"/>
                             <label for="is_use_authentication"/>
                             <div class="o_row">
                                 <field name="is_use_authentication" widget="boolean_toggle"/>
-                                <button name="action_generate_api_key"
-                                        string="Generate API Key"
+                                <button name="action_generate_access_token"
+                                        string="Generate Access Token"
                                         icon="oi-arrow-right"
                                         type="object"
                                         invisible="not is_use_authentication"
                                 />
                             </div>
-                            <field name="webhook_api_key" invisible="not is_use_authentication" widget="CopyClipboardChar"/>
+                            <field name="webhook_access_token" invisible="not is_use_authentication" widget="CopyClipboardChar"/>
                         </group>
                     </group>
                 </page>

@@ -10,33 +10,32 @@ from odoo.http import request
 from .status import status
 
 
-def response(response_status, message, data=None):
-    response = {'status': response_status, 'message': message}
+def response(status, message, data=None):
+    response = {'status': status, 'message': message}
     if data:
         response.update({'data': data})
     return response
 
 
-def validate_api_key(key_pram):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrap(self, *args, **kwargs):
-            api_key = request.httprequest.headers.get('Authorization')
-            if not api_key:
-                return response(
-                    message='The header Authorization missing',
-                    response_status=status.HTTP_401_UNAUTHORIZED
-                )
-            api_key_config = request.env['ir.config_parameter'].sudo().get_param(key_pram)
-            if api_key != api_key_config:
-                return response(
-                    message=f'The Client Secret {api_key} seems to have invalid.',
-                    response_status=status.HTTP_403_FORBIDDEN
-                )
-            request.update_env(SUPERUSER_ID)
-            return func(self, *args, **kwargs)
-        return wrap
-    return decorator
+def authentication(func):
+    @functools.wraps(func)
+    def wrap(self, *args, **kwargs):
+        access_token = request.httprequest.headers.get('Authorization')
+        access_token = re.sub(r'^Bearer\s+', '', access_token)
+        if not access_token:
+            return response(
+                message='The header Authorization missing',
+                status=status.HTTP_401_UNAUTHORIZED.value
+            )
+        carrier_id = request.env['delivery.carrier'].sudo().search([('webhook_access_token', '=', access_token)])
+        if not carrier_id:
+            return response(
+                message=f'The access token seems to have invalid.',
+                status=status.HTTP_403_FORBIDDEN.value
+            )
+        request.update_env(SUPERUSER_ID)
+        return func(self, *args, **kwargs)
+    return wrap
 
 
 def notification(notification_type: str, message: str):
@@ -75,47 +74,52 @@ def standardization_e164(phone_number):
 class URLBuilder(NamedTuple):
     host: str
     routes: str
-    params: str
+    query_params: str
+    path_params: str
 
     @classmethod
-    def _add_query_params(cls, param_name: str, v: Optional[dict[str, str]] = None) -> str:
+    def _add_path_params(cls, param_name, v=None):
+        if not v: return v
+        elif not isinstance(v, str): raise TypeError(f'{param_name} must be a str')
+        return v
+
+    @classmethod
+    def _add_query_params(cls, param_name, v=None):
         if not v: return v
         elif not isinstance(v, dict): raise TypeError(f'{param_name} must be a dict')
         return urlencode(v)
 
     @classmethod
-    def _add_routes(cls, param_name: str, v: Optional[list[str]] = None) -> str:
+    def _add_routes(cls, param_name, v=None):
         if not v: return ''
         elif not isinstance(v, list): raise TypeError(f'{param_name} must be a list')
         return ''.join(v)
 
     @classmethod
-    def _define_host(cls, param_name: str, v: str) -> str:
+    def _define_host(cls, param_name, v):
         if not v: raise KeyError(f'Key {param_name} missing')
         elif not isinstance(v, str): raise TypeError(f'Key {param_name} must be a string')
         return v
 
     @classmethod
-    def to_url(cls, instance, is_unquote: Optional[bool] = None) -> str:
-        if instance.params:
+    def to_url(cls, instance, is_unquote=None):
+        url = f'{instance.host}{instance.routes}'
+        if instance.query_params:
             if is_unquote:
-                params = re.sub(r"'", '"', unquote_plus(instance.params))
+                params = re.sub(r"'", '"', unquote_plus(instance.query_params))
             else:
-                params = re.sub(r"'", '"', instance.params)
-            return f'{instance.host}{instance.routes}?{params}'
-        return f'{instance.host}{instance.routes}'
+                params = re.sub(r"'", '"', instance.query_params)
+            return f'{url}?{params}'
+        if instance.path_params:
+            return f'{url}/{instance.path_params}'
+        return url
 
     @classmethod
-    def builder(
-            cls,
-            host: str,
-            routes: Optional[list[str]] = None,
-            params: Optional[dict[str, Any]] = None,
-            is_unquote: Optional[bool] = None
-    ) -> str:
+    def builder(cls, host, routes, query_params=None, path_params=None, is_unquote=None):
         instance = cls(
             cls._define_host('host', host),
             cls._add_routes('routes', routes),
-            cls._add_query_params('params', params)
+            cls._add_query_params('query_params', query_params),
+            cls._add_path_params('path_params', path_params)
         )
         return cls.to_url(instance, is_unquote)

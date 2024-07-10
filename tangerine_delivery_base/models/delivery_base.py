@@ -1,5 +1,5 @@
 import requests
-from uuid import uuid4
+from secrets import token_hex
 from requests.exceptions import ConnectionError, ConnectTimeout
 from odoo import fields, models, _
 from odoo.exceptions import UserError
@@ -32,11 +32,7 @@ class DeliveryBase(models.Model):
     default_promo_code = fields.Char(string='Promo Code')
     is_locally_delivery = fields.Boolean(string='Locally Delivery', default=False)
     is_use_authentication = fields.Boolean(string='Authentication Use', default=False)
-    webhook_api_key = fields.Char(string='API Key')
-    webhook_domain = fields.Char(string='Domain', readonly=True)
-    webhook_route = fields.Char(string='Route', readonly=True)
-    webhook_header = fields.Json(string='Header', readonly=True)
-    webhook_method = fields.Char(string='Method', readonly=True)
+    webhook_access_token = fields.Char(string='Access Token')
 
     def convert_weight(self, weight, unit):
         if unit == 'KG':
@@ -87,14 +83,9 @@ class DeliveryBase(models.Model):
                 raise NotImplementedError(_(f'Subclass has no attributes {self.delivery_type}_toggle_prod_environment'))
             getattr(self, f'{self.delivery_type}_toggle_prod_environment')()
 
-    def action_generate_api_key(self):
+    def action_generate_access_token(self):
         self.ensure_one()
-        self.write({'webhook_api_key': uuid4()})
-
-    def set_webhook_domain(self):
-        self.ensure_one()
-        web_base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        self.write({'webhook_domain': web_base_url})
+        self.write({'webhook_access_token': token_hex()})
 
 
 class DeliveryRouteAPI(models.Model):
