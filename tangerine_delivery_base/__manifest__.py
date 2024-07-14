@@ -28,7 +28,7 @@
         'views/menus.xml'
     ],
     'images': ['static/description/thumbnail.png'],
-    'license': 'OPL-1',
+    'license': 'LGPL-3',
     'installable': True,
     'auto_install': False,
     'application': False
