@@ -112,6 +112,7 @@
                             <field name="default_promo_code"/>
                         </group>
                         <group name="delivery_webhook" string="Webhook">
+                            <field name="webhook_url" widget="CopyClipboardChar" readonly="True"/>
                             <label for="is_use_authentication"/>
                             <div class="o_row">
                                 <field name="is_use_authentication" widget="boolean_toggle"/>
@@ -122,7 +123,7 @@
                                         invisible="not is_use_authentication"
                                 />
                             </div>
-                            <field name="webhook_access_token" invisible="not is_use_authentication" widget="CopyClipboardChar"/>
+                            <field name="webhook_access_token" invisible="not is_use_authentication" widget="CopyClipboardChar" readonly="True"/>
                         </group>
                     </group>
                 </page>

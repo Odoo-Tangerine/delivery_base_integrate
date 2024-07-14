@@ -8,7 +8,7 @@ class CarrierRefOrder(models.Model):
 
     picking_id = fields.Many2one('stock.picking', string='Picking', required=True, readonly=True)
     sale_id = fields.Many2one(related='picking_id.sale_id', string='Sale Order')
-    carrier_id = fields.Many2one(related='picking_id.carrier_id', string='Carrier')
+    carrier_id = fields.Many2one(related='picking_id.carrier_id', string='Carrier', store=True)
     delivery_type = fields.Selection(related='carrier_id.delivery_type')
     currency_id = fields.Many2one(related='picking_id.currency_id')
     carrier_tracking_ref = fields.Char(related='picking_id.carrier_tracking_ref', string='Carrier Tracking Ref')

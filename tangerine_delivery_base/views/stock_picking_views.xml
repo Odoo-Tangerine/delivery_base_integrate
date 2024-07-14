@@ -9,8 +9,16 @@
                 <field name="delivery_status_id"/>
                 <field name="delivery_status_code" invisible="True"/>
             </xpath>
+            <field name="carrier_tracking_ref" position="after">
+                <button name="%(carrier_ref_order_action)d"
+                        type="action"
+                        context="{'search_default_picking_id': id}"
+                        class="oi oi-search oe_link"
+                        invisible="not carrier_tracking_ref"
+                />
+            </field>
             <xpath expr="//group[@name='carrier_data']" position="after">
-                <group name='delivery_carrier_data' invisible="carrier_tracking_ref" string="Shipping Information">
+                <group name='delivery_carrier_data' invisible="carrier_tracking_ref" string="Provider Shipping Information">
                     <label for="cash_on_delivery"/>
                     <div class="o_row">
                         <field name="cash_on_delivery" style="max-width: 15%;" widget="boolean_toggle" readonly="carrier_tracking_ref"/>

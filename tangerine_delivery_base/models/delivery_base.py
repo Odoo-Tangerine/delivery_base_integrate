@@ -33,6 +33,7 @@ class DeliveryBase(models.Model):
     is_locally_delivery = fields.Boolean(string='Locally Delivery', default=False)
     is_use_authentication = fields.Boolean(string='Authentication Use', default=False)
     webhook_access_token = fields.Char(string='Access Token')
+    webhook_url = fields.Char(string='URL')
 
     def convert_weight(self, weight, unit):
         if unit == 'KG':
@@ -86,6 +87,11 @@ class DeliveryBase(models.Model):
     def action_generate_access_token(self):
         self.ensure_one()
         self.write({'webhook_access_token': token_hex()})
+
+    def set_webhook_url(self):
+        self.ensure_one()
+        web_base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        self.write({'webhook_url': f'{web_base_url}/webhook/v1/delivery/{self.delivery_type}'})
 
 
 class DeliveryRouteAPI(models.Model):
